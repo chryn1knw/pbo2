@@ -25,6 +25,12 @@ public class fpenjualan_hendy extends javax.swing.JFrame {
      */
     public fpenjualan_hendy() {
         initComponents();
+        faktur.setEnabled(false);
+        kdbarang.setEnabled(false);
+        hsatuan.setEnabled(false);
+        jumlah.setEnabled(false);
+        text2.setEnabled(false);
+        ttotal.setEnabled(false);
 //        model = new DefaultTableModel();
         // Buat custom DefaultTableModel supaya tidak dapat edit kolom
         model = new DefaultTableModel() {
@@ -566,7 +572,6 @@ public class fpenjualan_hendy extends javax.swing.JFrame {
         if (txt_bayar.getText().equals("") || txt_kembalian.getText().equals("")) {
             JOptionPane.showMessageDialog(null, "LENGKAPI DATA !", "Aplikasi Penjualan",
                     JOptionPane.INFORMATION_MESSAGE);
-
         } else {
             String a = txt_kembalian.getText();
             int ab = Integer.parseInt(String.valueOf(txt_kembalian.getText()));
@@ -578,44 +583,45 @@ public class fpenjualan_hendy extends javax.swing.JFrame {
             } else {
                 try {
                     Connection c = koneksi.getKoneksi();
+                    long millis = System.currentTimeMillis();
+                    java.sql.Date date = new java.sql.Date(millis);
+                    String tgl = date.toString();
+                    
                     Statement s = c.createStatement();
                     String sql = "SELECT * FROM tbl_hitung_jual";
                     ResultSet r = s.executeQuery(sql);
+
                     while (r.next()) {
-                        long millis = System.currentTimeMillis();
-                        java.sql.Date date = new java.sql.Date(millis);
-                        System.out.println(date);
-                        String tgl = date.toString();
-                        String sqla = "INSERT INTO tbl_penjualan VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-                        PreparedStatement p = c.prepareStatement(sqla);
-                        p.setString(1, faktur.getText());
-                        p.setString(2, r.getString("kd_barang"));
-                        p.setString(3, r.getString("nama_barang"));
-                        p.setString(4, r.getString("hsatuan"));
-                        p.setString(5, r.getString("jumlah_jual"));
-                        p.setString(6, r.getString("harga"));
-                        p.setString(7, txt_bayar.getText());
-                        p.setString(8, txt_kembalian.getText());
-                        p.setString(9, tgl);
-
-                        p.executeUpdate();
-                        p.close();
-
+                        String sqlPenjualan = "INSERT INTO tbl_penjualan (nofaktur, kd_barang, nama_barang, hsatuan, jumlah_jual, harga, bayar, kembalian, tanggal) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        PreparedStatement pPenjualan = c.prepareStatement(sqlPenjualan);
+                        pPenjualan.setString(1, faktur.getText());
+                        pPenjualan.setString(2, r.getString("kd_barang"));
+                        pPenjualan.setString(3, r.getString("nama_barang"));
+                        pPenjualan.setInt(4, r.getInt("hsatuan"));
+                        pPenjualan.setInt(5, r.getInt("jumlah_jual"));
+                        pPenjualan.setInt(6, r.getInt("harga"));
+                        pPenjualan.setInt(7, Integer.parseInt(txt_bayar.getText()));
+                        pPenjualan.setInt(8, Integer.parseInt(txt_kembalian.getText()));
+                        pPenjualan.setDate(9, date);
+                        
+                        System.out.println("Inserting item: " + r.getString("kd_barang") + ", " + r.getString("nama_barang"));
+                        pPenjualan.executeUpdate();
+                        pPenjualan.close();
                     }
                     r.close();
                     s.close();
                 } catch (SQLException e) {
-                    System.out.println("Terjadi Error transaksi");
+                    System.out.println("Terjadi Error transaksi: " + e.getMessage());
+                    e.printStackTrace();
                 } finally {
                     try {
                         String sqla = "TRUNCATE tbl_hitung_jual";
-                        java.sql.Connection conn = (Connection) koneksi.getKoneksi();
-                        java.sql.PreparedStatement pst = conn.prepareStatement(sqla);
+                        Connection conn = (Connection) koneksi.getKoneksi();
+                        PreparedStatement pst = conn.prepareStatement(sqla);
                         pst.execute();
                         JOptionPane.showMessageDialog(null, "TRANSAKSI SELESAI", "Aplikasi Penjualan",
                                 JOptionPane.INFORMATION_MESSAGE);
-//                        loadData();
+                         loadData();
                         text2.setText(faktur.getText());
                         txt_bayar.setText("");
                         txt_kembalian.setText("");
@@ -632,13 +638,13 @@ public class fpenjualan_hendy extends javax.swing.JFrame {
 
     private void btn_cetakActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cetakActionPerformed
 //         TODO add your handling code here:
-                try {
-                    Desktop.getDesktop().browse(new URL("http://localhost/PenjualanBarang/invoice.php?lap&fk=" + faktur.getText() + "").toURI());
-                } catch (Exception e) {
-                    System.out.println("Failed to open browser: " + e);
-                    
-                    System.out.println("Opening URL in console: http://localhost/PenjualanBarang/invoice.php?lap&fk=" + faktur.getText());
-                }
+        try {
+            Desktop.getDesktop().browse(new URL("http://localhost/PenjualanBarang/src/invoice.php?nofaktur=" + text2.getText() + "").toURI());
+        } catch (Exception e) {
+            System.out.println("Failed to open browser: " + e);
+
+            System.out.println("Opening URL in console: http://localhost/PenjualanBarang/src/invoice.php?nofaktur=" + text2.getText());
+        }
     }//GEN-LAST:event_btn_cetakActionPerformed
 
     private void txt_bayarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txt_bayarKeyReleased

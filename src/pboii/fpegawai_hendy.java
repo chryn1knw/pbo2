@@ -93,6 +93,23 @@ public class fpegawai_hendy extends javax.swing.JFrame {
         }
     }
 
+    private boolean isUsernameOrEmailExists(String username, String email) {
+        try {
+            Connection c = koneksi.getKoneksi();
+            String sql = "SELECT COUNT(*) FROM tbl_login WHERE username = ? OR email = ?";
+            PreparedStatement statement = c.prepareStatement(sql);
+            statement.setString(1, username);
+            statement.setString(2, email);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0; // Jika ada catatan yang ditemukan, kembalikan true
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -353,8 +370,8 @@ public class fpegawai_hendy extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Data berhasil diubah", "Success", JOptionPane.INFORMATION_MESSAGE);
             } catch (SQLException e) {
                 System.out.println("Terjadi Error btnUbah");
-            } finally {                
-                loadData();                                
+            } finally {
+                loadData();
             }
         }
     }//GEN-LAST:event_btn_ubahActionPerformed
@@ -369,7 +386,7 @@ public class fpegawai_hendy extends javax.swing.JFrame {
 
     private void txt_telpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_telpActionPerformed
         // TODO add your handling code here:
-        
+
     }//GEN-LAST:event_txt_telpActionPerformed
 
     private void btn_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_backActionPerformed
@@ -418,6 +435,13 @@ public class fpegawai_hendy extends javax.swing.JFrame {
                     return;
                 }
             }
+
+            // Check if username or email already exists
+            if (isUsernameOrEmailExists(usernamee, emaill)) {
+                JOptionPane.showMessageDialog(null, "Username atau Email sudah terdaftar!", "Duplicate Data", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             try {
                 Connection c = koneksi.getKoneksi();
                 String sql = "INSERT INTO tbl_login (username, password, jenis_kelamin, email, no_telp, agama, alamat) VALUES (?, ?, ?, ?, ?, ?, ?)";

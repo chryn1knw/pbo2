@@ -1,5 +1,8 @@
 package pboii;
 
+import java.awt.Desktop;
+import java.net.URL;
+
 /**
  *
  * @author hensu
@@ -10,7 +13,7 @@ public class fmenu_hendy extends javax.swing.JFrame {
      * Creates new form fmenu
      */
     public fmenu_hendy() {
-        initComponents();
+        initComponents();        
     }
 
     /**
@@ -150,16 +153,30 @@ public class fmenu_hendy extends javax.swing.JFrame {
 
     private void menuLaporanStokActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuLaporanStokActionPerformed
         // TODO add your handling code here:
-        flaporan_stok_hendy fps = new flaporan_stok_hendy();
-        fps.setVisible(true);
-        this.setVisible(false);
+//        flaporan_stok_hendy fps = new flaporan_stok_hendy();
+//        fps.setVisible(true);
+//        this.setVisible(false);
+        try {
+            Desktop.getDesktop().browse(new URL("http://localhost/PenjualanBarang/src/laporanstokbarang.php").toURI());
+        } catch (Exception e) {
+            System.out.println("Failed to open browser: " + e);
+
+            System.out.println("Opening URL in console: http://localhost/PenjualanBarang/src/laporanstokbarang.php");
+        }
     }//GEN-LAST:event_menuLaporanStokActionPerformed
 
     private void menuLaporanPenjualanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuLaporanPenjualanActionPerformed
         // TODO add your handling code here:
-        flaporan_penjualan_hendy fjs = new flaporan_penjualan_hendy();
-        fjs.setVisible(true);
-        this.setVisible(false);
+//        flaporan_penjualan_hendy fjs = new flaporan_penjualan_hendy();
+//        fjs.setVisible(true);
+//        this.setVisible(false);
+        try {
+            Desktop.getDesktop().browse(new URL("http://localhost/PenjualanBarang/src/laporanpenjualan.php").toURI());
+        } catch (Exception e) {
+            System.out.println("Failed to open browser: " + e);
+
+            System.out.println("Opening URL in console: http://localhost/PenjualanBarang/src/laporanpenjualan.php");
+        }
     }//GEN-LAST:event_menuLaporanPenjualanActionPerformed
 
     /**
